@@ -1,12 +1,25 @@
-import express from "express";
-const app = express();
-import http from "http";
-const server = http.createServer(app);
+import express from 'express'
+import http from 'http'
+import { Server } from 'socket.io'
 
-app.get("/", (req, res) => {
-  res.send("<h1>Hello world</h1>");
-});
+const app = express()
+const server = http.createServer(app)
+const io = new Server(server, {
+  cors: {
+    origin: ['http://localhost:3000', 'http://localhost:8080'],
+    methods: ['GET', 'POST'],
+  },
+})
 
-server.listen(3000, () => {
-  console.log("listening on *:3000");
-});
+io.on('connection', socket => {
+  console.log('a user connected')
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected')
+  })
+})
+
+const port = 3001
+server.listen(port, () => {
+  console.log(`listening on *:${port}`)
+})
